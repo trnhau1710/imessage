@@ -7,4 +7,23 @@ const api = axios.create({
     }
 });
 
+//Request Interceptor
+
+api.interceptors.request.use(
+    (config) => {
+        //Lay JWT token tu Local Storage
+        const token = localStorage.getItem("token");
+
+        // Neu co token thi dinh kem vao Authorization Header
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 export default api;

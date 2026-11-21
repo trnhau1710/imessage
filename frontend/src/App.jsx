@@ -1,51 +1,54 @@
-import { useEffect, useState } from "react";
-//useState lưu trữ & quản lý dữ liệu thay đổi trên giao diện ==> thay đổi từ backend mà frontend cần cập nhật
-//useEffect thực hiện các tác vụ phụ khi component được render hoặc khi dependencies thay đổi ==> thay đổi từ frontend cần phải thực hiện gọi API các kiểu
-import api from "./services/api"; // gọi thằng api đã export từ file api.js
 
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Chat from "./pages/Chat";
 
 function App() {
+  const { isAuthenticated, loading } = useAuth();
 
-  //đây là phần quan trọng nhất
-  const [serverStatus, setServerStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const checkBackend = async () => {
-      try {
-        const response = await api.get("/health");
-
-        setServerStatus(response.data);
-      }
-      catch (error) {
-        console.error("API Error: ", error);
-        setError("Cannot connect to Backend");
-      }
-      finally {
-        setLoading(false);
-      }
-    };
-
-    checkBackend();
-  }, []);
-
+  if (loading) {
+    return <p>Checking authentication...</p>;
+  }
 
   return (
-    <div>
-      <h1>Mini Messenger</h1>
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? <Navigate to="/" replace />
+              : <Login />
+          }
+        />
 
-      {loading && <p>Connecting to Backend...</p>}
+        <Route
+          path="/register"
+          element={
+            isAuthenticated
+              ? <Navigate to="/" replace />
+              : <Register />
+          }
+        />
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/chat" element={<Chat />} />
+        </Route>
 
-      {serverStatus && (
-        <div>
-          <p>{serverStatus.message}</p>
-          <p>Status: Connected</p>
-        </div>
-      )}
 
-      {error && <p>{error}</p>}
-    </div>
+        {/* Default Routes */}
+        <Route
+          path="/"
+          element={
+            <Navigate to={isAuthenticated ? "/chat" : "/login"} replace />
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -2,7 +2,8 @@ import express from "express" //giúp xây dựng backend server và API
 import cors from "cors" //Kiểm soát việc truy cập tài nguyên từ các origin khác
 import dotenv from "dotenv" //Đọc thông tin cấu hình từ file .env
 import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/", userRoutes);
 
 //Test API
 app.get("/", (req, res) => {

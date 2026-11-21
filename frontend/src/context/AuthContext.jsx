@@ -22,13 +22,7 @@ export const AuthProvider = ({ children }) => {
 
             try {
                 //gui request den endpoint de kiem tra nguoi dung dang dang nhap
-                const response = await api.get("/auth/me", {
-                    //dinh kem token vao header Authorization
-                    header: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
+                const response = await api.get("/auth/me");
                 //neu token hop le thi luu du lieu vao user bang setUser
                 setUser(response.data.user);
             }
