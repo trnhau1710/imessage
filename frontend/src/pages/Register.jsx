@@ -29,55 +29,150 @@ function Register() {
         }
     };
 
+
     return (
-        <div>
-            <h1>Create Account</h1>
+        <div className="auth-page">
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(event) => setUsername(event.target.value)}
-                        placeholder="Enter your username"
-                        required
-                    />
+            {/* LEFT INTRODUCTION */}
+            <section className="auth-intro">
+
+                <div className="auth-intro-header">
+                    <div className="auth-logo-text">
+                        IMESSAGE<span>.</span>
+                    </div>
                 </div>
 
-                <div>
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        placeholder="Enter your email"
-                        required
-                    />
+                <div className="auth-intro-content">
+
+                    <p className="eyebrow">
+                        A NEW WAY TO CONNECT
+                    </p>
+
+                    <h1>
+                        Start a
+                        <br />
+                        conversation.
+                        <br />
+                        <span>Make it matter.</span>
+                    </h1>
+
+                    <p>
+                        Create your account and become part of a space
+                        where conversations are simple, personal
+                        and always within reach.
+                    </p>
+
                 </div>
 
-                <div>
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        placeholder="Enter your password"
-                        required
-                    />
+                <div className="auth-intro-footer">
+                    IMESSAGE — YOUR SPACE TO CONNECT
                 </div>
 
-                {error && <p>{error}</p>}
+            </section>
 
-                <button type="submit" disabled={submitting}>
-                    {submitting ? "Registering..." : "Register"}
-                </button>
-            </form>
+            {/* RIGHT REGISTER FORM */}
+            <section className="auth-form-panel">
 
-            <p>
-                Already have an account? <Link to="/login">Login</Link>
-            </p>
+                <div className="auth-form-container">
+
+                    <img
+                        src="/images/imessage-logo.png"
+                        alt="IMESSAGE Logo"
+                        className="auth-form-logo"
+                    />
+
+                    <div className="auth-form-heading">
+
+                        <h2>Create account.</h2>
+
+                        <p>
+                            Fill in your details to get started.
+                        </p>
+
+                    </div>
+
+                    <form
+                        className="auth-form"
+                        onSubmit={handleSubmit}
+                    >
+
+                        <div className="form-group">
+
+                            <label>Username</label>
+
+                            <input
+                                type="text"
+                                placeholder="Enter your username"
+                                value={username}
+                                onChange={(event) => setUsername(event.target.value)}
+                                required
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Email address</label>
+
+                            <input
+                                type="email"
+                                placeholder="Enter your email"
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
+                                required
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Password</label>
+
+                            <input
+                                type="password"
+                                placeholder="Create a password"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
+                                required
+                            />
+
+                        </div>
+
+                        {error && (
+                            <p className="auth-error">
+                                {error}
+                            </p>
+                        )}
+
+                        <button
+                            className="primary-button"
+                            type="submit"
+                            disabled={submitting}
+                        >
+                            {submitting
+                                ? "Creating account..."
+                                : "Create account"
+                            }
+                        </button>
+
+                    </form>
+
+                    <div className="auth-footer">
+
+                        Already have an account?{" "}
+
+                        <Link to="/login">
+                            Sign in
+                        </Link>
+
+                    </div>
+
+                </div>
+
+            </section>
+
         </div>
     );
+
 }
 export default Register;

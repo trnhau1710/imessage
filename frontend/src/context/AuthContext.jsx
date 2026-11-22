@@ -1,86 +1,95 @@
-import { Children, createContext, useContext, useEffect, useState } from "react";
+
+import { createContext, useContext, useEffect, useState } from "react";
 
 import api from "../services/api.js";
+import {
+    connectSocket,
+    disconnectSocket
+} from "../services/socket.js";
 
-//Tao context
+// Create context
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); //Nguoi dung dang dang nhap hien tai
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    //Kiem tra trang thai dang nhap khi nguoi dung mo ung dung
+    // Check authentication when opening the application
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem("token"); //khi nguoi dung dang nhap he thong se luu chuoi ma hoa vao bien token trong LocalStorage cua trinh duyet
+            const token = localStorage.getItem("token");
 
-            //neu khong co token thi tat trang thai loading va dung ham
             if (!token) {
                 setLoading(false);
                 return;
             }
 
             try {
-                //gui request den endpoint de kiem tra nguoi dung dang dang nhap
                 const response = await api.get("/auth/me");
-                //neu token hop le thi luu du lieu vao user bang setUser
+
                 setUser(response.data.user);
-            }
-            catch (error) {
+
+                // Connect Socket.IO after authentication
+                connectSocket(token);
+            } catch (error) {
                 localStorage.removeItem("token");
+                disconnectSocket();
                 setUser(null);
-            }
-            finally {
+            } finally {
                 setLoading(false);
             }
         };
 
         checkAuth();
-    }, [])
 
-    //Ham xu ly dang nhap
+        return () => {
+            disconnectSocket();
+        };
+    }, []);
+
+    // Login
     const login = async (email, password) => {
-
-        //goi api dang nhap
         const response = await api.post("/auth/login", {
-            email, password
+            email,
+            password
         });
 
-        //luu token va thong tin user lai
         const { token, user } = response.data;
 
-        //set token cho bien token trong localStorage
         localStorage.setItem("token", token);
-
-        //Set user cho user dang dang nhap
         setUser(user);
+
+        // Connect Socket.IO after login
+        connectSocket(token);
 
         return response.data;
     };
 
-    //Ham xu ly dang ky
+    // Register
     const register = async (username, email, password) => {
-        //goi api dang ky
         const response = await api.post("/auth/register", {
-            username, email, password
+            username,
+            email,
+            password
         });
 
         return response.data;
-    }
+    };
 
-    //Xu ly dang xuat
+    // Logout
     const logout = () => {
+        disconnectSocket();
+
         localStorage.removeItem("token");
         setUser(null);
     };
 
-    //Chia se du lieu cho toan bo ung dung
     return (
         <AuthContext.Provider
             value={{
                 user,
                 loading,
-                isAuthenticated: Boolean(user), //neu user dang dang nhap la true, nguoc lai la false
+                isAuthenticated: Boolean(user),
                 login,
                 register,
                 logout
@@ -89,10 +98,9 @@ export const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider>
     );
-
 };
 
-//Custom hook de su dung AuthContext
+// Custom hook
 export const useAuth = () => {
     return useContext(AuthContext);
 };
