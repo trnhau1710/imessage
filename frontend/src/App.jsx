@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PageTransition from "./components/PageTransition";
 import Chat from "./pages/Chat";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -36,6 +37,11 @@ function App() {
                 ? <Navigate to="/" replace />
                 : <Register />
             }
+          />
+
+          <Route
+            path="/verify-email"
+            element={<VerifyEmail />}
           />
         </Route>
         {/* Protected Routes */}
